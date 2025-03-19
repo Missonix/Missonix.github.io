@@ -1,0 +1,295 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>VPS网络代理服务器搭建及网络安全与攻击 | Missonix</title><meta name="author" content="Missonix"><meta name="copyright" content="Missonix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="基础网络知识参考该网络拓扑图 基础说明：IP地址是电脑主机(服务器)的地址，默认网关是局域网内路由器的地址，如果没有默认网关(路由器)那么 IP地址仅仅只能用于局域网内部的通信；有默认网关(连接路由器)后则主机发送数据(IP地址标识)给网关，网关将数据中转发送至目标主机，网关(路由器)是连接局域网内IP地址与公域网的桥梁。 TCP&#x2F;IP 四层模型四层模型指 应用层、传输层、网络层、数据链">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VPS网络代理服务器搭建及网络安全与攻击">
+<meta property="og:url" content="https://missonix.github.io/2023/09/29/VPS%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E5%8F%8A%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%B8%8E%E6%94%BB%E5%87%BB/index.html">
+<meta property="og:site_name" content="Missonix">
+<meta property="og:description" content="基础网络知识参考该网络拓扑图 基础说明：IP地址是电脑主机(服务器)的地址，默认网关是局域网内路由器的地址，如果没有默认网关(路由器)那么 IP地址仅仅只能用于局域网内部的通信；有默认网关(连接路由器)后则主机发送数据(IP地址标识)给网关，网关将数据中转发送至目标主机，网关(路由器)是连接局域网内IP地址与公域网的桥梁。 TCP&#x2F;IP 四层模型四层模型指 应用层、传输层、网络层、数据链">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://missonix.github.io/img/Missonix.jpg">
+<meta property="article:published_time" content="2023-09-29T02:53:05.000Z">
+<meta property="article:modified_time" content="2025-03-19T03:42:58.102Z">
+<meta property="article:author" content="Missonix">
+<meta property="article:tag" content="VPS">
+<meta property="article:tag" content="网络安全">
+<meta property="article:tag" content="代理服务器">
+<meta property="article:tag" content="网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://missonix.github.io/img/Missonix.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "VPS网络代理服务器搭建及网络安全与攻击",
+  "url": "https://missonix.github.io/2023/09/29/VPS%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E5%8F%8A%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%B8%8E%E6%94%BB%E5%87%BB/",
+  "image": "https://missonix.github.io/img/Missonix.jpg",
+  "datePublished": "2023-09-29T02:53:05.000Z",
+  "dateModified": "2025-03-19T03:42:58.102Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Missonix",
+      "url": "https://missonix.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://missonix.github.io/2023/09/29/VPS%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E5%8F%8A%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%B8%8E%E6%94%BB%E5%87%BB/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'VPS网络代理服务器搭建及网络安全与攻击',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/Missonix.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">15</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Missonix</span></a><a class="nav-page-title" href="/"><span class="site-name">VPS网络代理服务器搭建及网络安全与攻击</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">VPS网络代理服务器搭建及网络安全与攻击</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-09-29T02:53:05.000Z" title="发表于 2023-09-29 10:53:05">2023-09-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-19T03:42:58.102Z" title="更新于 2025-03-19 11:42:58">2025-03-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="基础网络知识"><a href="#基础网络知识" class="headerlink" title="基础网络知识"></a>基础网络知识</h1><p>参考该网络拓扑图<br><img src="/source/img/%E7%BD%91%E7%BB%9C%E6%8B%93%E6%89%91%E5%9B%BE.png" alt="网络拓扑图"></p>
+<p>基础说明：IP地址是电脑主机(服务器)的地址，默认网关是局域网内路由器的地址，如果没有默认网关(路由器)那么 IP地址仅仅只能用于局域网内部的通信；有默认网关(连接路由器)后则主机发送数据(IP地址标识)给网关，网关将数据中转发送至目标主机，网关(路由器)是连接局域网内IP地址与公域网的桥梁。</p>
+<h2 id="TCP-IP-四层模型"><a href="#TCP-IP-四层模型" class="headerlink" title="TCP&#x2F;IP 四层模型"></a>TCP&#x2F;IP 四层模型</h2><p>四层模型指 应用层、传输层、网络层、数据链路层，除此之外最底部还有一个物理层<br><img src="/source/img/TCP-IP%E5%9B%9B%E5%B1%82%E6%A8%A1%E5%9E%8B.png" alt="TCP&#x2F;IP 四层模型"><br>应用层：HTTP、HTTPS协议及DNS解析在该层完成<br>传输层：端口封装，TCP、UDP握手在该层完成<br>网络层：IP地址封装，虚拟网卡的接入、ICMP在该层<br>数据链路层：MAC地址的封装在该层完成</p>
+<h3 id="TCP三次握手-建立连接"><a href="#TCP三次握手-建立连接" class="headerlink" title="TCP三次握手(建立连接)"></a>TCP三次握手(建立连接)</h3><ol>
+<li>客户端 向 服务器发送消息报文请求连接，<br>关键字段：SYN、ACK、顺序号、确认号、，客户端发送SYN&#x3D;1、ACK&#x3D;0、顺序号&#x3D;x；</li>
+<li>服务器收到请求后，回复报文确定可以连接，<br>服务端回复SYN&#x3D;1、ACK&#x3D;1、顺序号&#x3D;y、确认号&#x3D;x+1； </li>
+<li>客户端收到回复，发送最终报文连接建立，<br>客户端回复SYN&#x3D;0、ACK&#x3D;1、顺序号&#x3D;x+1、确认号&#x3D;y+1；<br><img src="/source/img/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B.png" alt="TCP三次握手"></li>
+</ol>
+<h3 id="TCP四次挥手-断开连接"><a href="#TCP四次挥手-断开连接" class="headerlink" title="TCP四次挥手(断开连接)"></a>TCP四次挥手(断开连接)</h3><ol>
+<li>主动方 发送报文请求断开连接 </li>
+<li>被动方 收到请求后，立即回复，表示准备断开 </li>
+<li>被动方 准备就绪，再次发送报文表示可以断开 </li>
+<li>主动方 收到确定，发送最终报文完成断开<br><img src="/source/img/TCP%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B.png" alt="TCP四次挥手"></li>
+</ol>
+<h3 id="TCP四层模型传输机制"><a href="#TCP四层模型传输机制" class="headerlink" title="TCP四层模型传输机制"></a>TCP四层模型传输机制</h3><p><img src="/source/img/TCP%E5%9B%9B%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%BC%A0%E8%BE%93%E6%9C%BA%E5%88%B6.png" alt="TCP四层模型传输机制"></p>
+<h1 id="DNS服务器"><a href="#DNS服务器" class="headerlink" title="DNS服务器"></a>DNS服务器</h1><p>DNS位于应用层，用于网络域名解析，如当你访问<a href="http://www.baidu.com时，网络并不知道www.baidu.com是什么，DNS服务器相当于一个对照表或中介，将百度的域名www.baidu.com与百度服务器的IP地址180.101.50.188进行对照映射，使得在浏览器上输入www.baidu.com后，计算机知道访问的目标地址是百度的IP地址180.101.50.188">www.baidu.com时，网络并不知道www.baidu.com是什么，DNS服务器相当于一个对照表或中介，将百度的域名www.baidu.com与百度服务器的IP地址180.101.50.188进行对照映射，使得在浏览器上输入www.baidu.com后，计算机知道访问的目标地址是百度的IP地址180.101.50.188</a></p>
+<ul>
+<li>DNS查询通常以UDP协议进行传输(DNS over UDP)</li>
+<li>除此之外请求的DNS还可能会遵循以下协议：<ul>
+<li>TCP协议，(DNS over TCP)</li>
+<li>TLS协议，缩写DoT (DNS over TLS)，加密数据</li>
+<li>HTTPS协议，缩写DoH (DNS over HTTPS)，加密数据<br><img src="/source/img/DNS%E6%9C%8D%E5%8A%A1%E5%99%A8.png" alt="DNS服务器"></li>
+</ul>
+</li>
+</ul>
+<ol>
+<li>DNS在计算机内部操作系统内及浏览器的DNS缓存内存在，主要用于缓存解析域名；</li>
+<li>DNS在局域网内的路由器内也存在，用来缓存收发数据的IP与域名的对照；</li>
+<li>DNS在公网内的大量转发路由设备内存在，用于缓存转发的IP及域名，缓解上游DNS服务器的负担；</li>
+<li>DNS在根服务器内存在，如百度的权威DNS服务器内存储了自身网站的IP地址；<blockquote>
+<p>当一台计算机第一次访问百度时，它需要通过DNS解析来获取百度的IP地址。这个过程大致如下：</p>
+<ol>
+<li>DNS查询启动：用户在浏览器中输入百度的域名（如<a target="_blank" rel="noopener" href="http://www.baidu.com),浏览器首先检查自己的缓存中是否有这个域名对应的ip地址./">www.baidu.com），浏览器首先检查自己的缓存中是否有这个域名对应的IP地址。</a></li>
+<li>本地DNS缓存查询：如果浏览器缓存中没有，操作系统会检查本地DNS缓存是否有相应的映射记录。</li>
+<li>本地hosts文件查询：如果本地DNS缓存中也没有，操作系统会查看本地hosts文件是否有相应的映射。</li>
+<li>ISP DNS服务器查询：如果以上都没有找到，计算机会向互联网服务提供商（ISP）的DNS服务器发送查询请求，询问<a target="_blank" rel="noopener" href="http://www.baidu.com的ip地址./">www.baidu.com的IP地址。</a></li>
+<li>递归查询：ISP的DNS服务器收到请求后，会先查自己的缓存记录，如果查到了直接返回就结束了。如果没有查到，ISP的DNS服务器就会向更上一级的DNS服务器发起查询请求。</li>
+<li>根域名服务器查询：如果ISP的DNS服务器没有缓存，它会向根域名服务器发起查询请求，根域名服务器会告诉ISP的DNS服务器，该域名是由哪个顶级域名（TLD）服务器管理的，并提供TLD服务器的联系方式（IP地址）。</li>
+<li>顶级域名服务器查询：ISP的DNS服务器再向.com顶级域名服务器发起请求，询问<a target="_blank" rel="noopener" href="http://www.baidu.com的ip地址./">www.baidu.com的IP地址。</a></li>
+<li>权威DNS服务器查询：.com顶级域名服务器会告诉ISP的DNS服务器，这个域名是由百度的权威DNS服务器管理的，并提供权威DNS服务器的联系方式（IP地址）。</li>
+<li>获取IP地址：ISP的DNS服务器最后向百度的权威DNS服务器发起请求，百度的权威DNS服务器确认是自己管理的域名后，会返回<a target="_blank" rel="noopener" href="http://www.baidu.com对应的ip地址给isp的dns服务器./">www.baidu.com对应的IP地址给ISP的DNS服务器。</a></li>
+<li>缓存IP地址：ISP的DNS服务器将获取到的IP地址缓存起来，并将结果返回给用户的计算机</li>
+</ol>
+</blockquote>
+</li>
+</ol>
+<p>注意：DNS服务器主要用于存储域名与IP地址之间的映射关系，这是其核心功能。然而，DNS也可以用于其他类型的数据存储，包括公钥。这种用途是通过DNSSEC（DNS安全扩展）实现的，它允许将公钥直接嵌入到DNS记录中。</p>
+<h2 id="DNS泄露"><a href="#DNS泄露" class="headerlink" title="DNS泄露"></a>DNS泄露</h2><p>在使用虚拟专线网络如VPN或VPS访问国际网站时，设备的DNS请求并没有通过VPN或VPS的加密通道发送，而是通过本地DNS请求</p>
+<h1 id="TLS安全协议"><a href="#TLS安全协议" class="headerlink" title="TLS安全协议"></a>TLS安全协议</h1><p>TLS用于解决http明文传输的风险，对数据包内容进行非对称加密<br>http协议：数据包请求明文发送，可以被任意中间设备监视甚至修改<br>https协议：http+tls，http数据通过tls加密</p>
+<h2 id="TLS握手过程"><a href="#TLS握手过程" class="headerlink" title="TLS握手过程"></a>TLS握手过程</h2><p>TLS 握手中的确切步骤将根据所使用的密钥交换算法的种类和双方支持的密码套件而有所不同。RSA 密钥交换算法虽然现在被认为不安全，但曾在 1.3 之前的 TLS 版本中使用。大致如下：</p>
+<ol>
+<li>“客户端问候（client hello）” 消息： 客户端通过向服务器发送“问候”消息来开始握手。该消息将包含客户端支持的 TLS 版本，支持的密码套件，以及称为一串称为“客户端随机数（client random）”的随机字节。</li>
+<li>“服务器问候（server hello）”消息： 作为对 client hello 消息的回复，服务器发送一条消息，内含服务器的 SSL 证书、服务器选择的密码套件，以及“服务器随机数（server random）”，即由服务器生成的另一串随机字节。</li>
+<li>身份验证： 客户端使用颁发该证书的证书颁发机构验证服务器的 SSL 证书。此举确认服务器是其声称的身份，且客户端正在与该域的实际所有者进行交互。</li>
+<li>预主密钥： 客户端再发送一串随机字节，即“预主密钥（premaster secret）”。预主密钥是使用公钥加密的，只能使用服务器的私钥解密。（客户端从服务器的 SSL 证书中获得公钥。）</li>
+<li>私钥被使用：服务器对预主密钥进行解密。</li>
+<li>生成会话密钥：客户端和服务器均使用客户端随机数、服务器随机数和预主密钥生成会话密钥。双方应得到相同的结果。</li>
+<li>客户端就绪：客户端发送一条“已完成”消息，该消息用会话密钥加密。</li>
+<li>服务器就绪：服务器发送一条“已完成”消息，该消息用会话密钥加密。</li>
+<li>实现安全对称加密：已完成握手，并使用会话密钥继续进行通信。</li>
+</ol>
+<h2 id="TLS1-3"><a href="#TLS1-3" class="headerlink" title="TLS1.3"></a>TLS1.3</h2><p>TLS 1.3 不支持 RSA，也不支持易受攻击的其他密码套件和参数。它还缩短了 TLS 握手，使 TLS 1.3 握手更快更安全。<br>TLS 1.3 握手的基本步骤为：</p>
+<ul>
+<li>客户端问候：客户端发送客户端问候消息，内含协议版本、客户端随机数和密码套件列表。由于已从 TLS 1.3 中删除了对不安全密码套件的支持，因此可能的密码套件数量大大减少。客户端问候消息还包括将用于计算预主密钥的参数。大体上来说，客户端假设它知道服务器的首选密钥交换方法（由于简化的密码套件列表，它有可能知道）。这减少了握手的总长度——这是 TLS 1.3 握手与 TLS 1.0、1.1 和 1.2 握手之间的重要区别之一。</li>
+<li>服务器生成主密钥：此时，服务器已经接收到客户端随机数以及客户端的参数和密码套件。它已经拥有服务器随机数，因为它可以自己生成。因此，服务器可以创建主密钥。</li>
+<li>服务器问候和“完成”：服务器问候包括服务器的证书、数字签名、服务器随机数和选择的密码套件。因为它已经有了主密钥，所以它也发送了一个“完成”消息。</li>
+<li>最后步骤和客户端“完成”：客户端验证签名和证书，生成主密钥，并发送“完成”消息。</li>
+<li>实现安全对称加密<br>HTTPS加密原理<br><img src="/source/img/HTTPS%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png" alt="HTTPS加密原理"><blockquote>
+<p>SNI：SNI解决了一个问题，多个域名共享同一个IP地址时，如何让服务器知道该为哪个域名提供证书。没有SNI的话，服务器就无法在同一个IP上区分不同的主机名，每个使用不同证书的网站需要不同的端口号。这是因为在SSL&#x2F;TLS握手之前，服务器无法知道客户端请求的具体域名。但有了SNI，服务器可以在同一个IP地址和端口上为多个域名提供服务，因为SNI信息在握手阶段就已经被传递给服务器，以避免冲突导致无法为每个网站提供不同的SSL&#x2F;TLS证书。SNI通常以域名的形式出现，它在TLS握手的ClientHello消息中被发送</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="DFW防火墙"><a href="#DFW防火墙" class="headerlink" title="DFW防火墙"></a>DFW防火墙</h2><p><img src="/source/img/DFW%E9%98%B2%E7%81%AB%E5%A2%99.png" alt="DFW防火墙"><br>GFW防火墙：中国网络防火墙，由中国政府构建</p>
+<h2 id="DNS污染"><a href="#DNS污染" class="headerlink" title="DNS污染"></a>DNS污染</h2><p>GFW防火墙会篡改根服务器响应的报文中的 目标IP地址导致主机收到的响应IP地址不存在，叫DNS污染(DNS劫持)<br><img src="/source/img/DNS%E6%B1%A1%E6%9F%93.png" alt="DNS污染"><br>解决办法：因为主机在获取DNS域名IP地址前会先查看缓存，同时DNS污染的核心是在发起DNS请求时GFW对报文内容做了修改，导致响应了一个错误不存在的IP地址，那么只要不去发起DNS请求即可，通过在命令行ping 目标域名 得到ip地址，将 域名及ip地址映射关系写入 hosts文件，即可绕开DNS请求，直接访问目标ip</p>
+<ul>
+<li>GFW应对措施：TCP重置攻击<br>DNS污染还有一种应用场景，如：公共场合内有一个无密码的wifi，这个wifi的拥有者可能是一个黑客，当有人连接后，黑客可以通过在路由器配置DNS服务器地址，当使用者在访问某个域名时，DNS服务器将域名对应的ip地址修改为其他网站ip地址，进行钓鱼</li>
+</ul>
+<h2 id="TCP重置攻击"><a href="#TCP重置攻击" class="headerlink" title="TCP重置攻击"></a>TCP重置攻击</h2><ul>
+<li>方式一：TCP连接不成功，GFW防火墙干掉数据包或伪造根服务器发送拒绝TCP请求<br><img src="/source/img/TCP%E8%BF%9E%E6%8E%A5%E4%B8%8D%E6%88%90%E5%8A%9F.png" alt="TCP连接不成功"></li>
+<li>方式二：TCP连接成功，GFW检查数据包内容存在黑名单IP地址干掉数据包<br><img src="/source/img/TCP%E8%BF%9E%E6%8E%A5%E6%88%90%E5%8A%9F.png" alt="TCP连接成功"><br>防火墙工作原理</li>
+</ul>
+<h1 id="网络代理传输协议"><a href="#网络代理传输协议" class="headerlink" title="网络代理传输协议"></a>网络代理传输协议</h1><ol>
+<li>Shadowsocks(ss)协议<br>缺点：加密算法太简单，容易被检测<br>对数据包进行ChaCha20或AES等加密算法的加密，使得防火墙无法识别数据包的内容，但是防火墙通过主动向VPS发送探测可以知道VPS在本机安装了SS服务从而墙掉VPS，需要使用插件伪装成HTTP或者HTTPS让防火墙认为向发送的数据是正常的网页端流量</li>
+<li>Trojan协议<br>对数据包加上trojan协议头，再对数据包进行tls加密伪装成https流量，使得GFW检测为正常的https流量，若GFW主动向VPS发出探测，经过tls解密后 VPS的trojan服务器会检查头部是否含trojan协议头及密码是否正确，若不对则跳转至其他合法网站使得GFW探测目标为合法网站<br><img src="/source/img/Trojan%E5%8D%8F%E8%AE%AE.png" alt="Trojan协议"></li>
+<li>Vmess协议<br>使用加密算法及密钥对数据数据内容进行加密，再用用户id对加密算法及密钥和加密内容进行二次加密，在数据头部加入当前时间的正负30秒的系统时间戳+id的哈希值，再加上目标服务器的ip地址。服务器先通过时间戳来验证vmess的合法性(客户端和服务器端时间戳相差不能超过90s)<br>缺点：特征显著，无伪装<br><img src="/source/img/Vmess%E5%8D%8F%E8%AE%AE.png" alt="Vmess协议"><br><img src="/source/img/Vmess%E5%8D%8F%E8%AE%AE2.png" alt="Vmess协议2"></li>
+<li>Vmess协议的改进：Vmess+tls+ws+web<br>先不对数据内容进行加密(使用zero算法对数据进行不加密)，使用aead加密算法对zero进行加密,，再使用tls对数据包进行加密并在头部加上域名头，通过ws(websocket是基于tcp协议的改进)或tcp协议传输至目标伪装服务器&#x2F;ray下，目标伪装服务器&#x2F;ray下即是VPS的vmess地址。若GFW向域名发送数据，则打开伪装服务器的首页即伪装地址<br>缺点：在tls加密前还会对协议头部加密，过于冗余<br><img src="/source/img/Vmess+tls+ws+web.png" alt="Vmess+tls+ws+web"></li>
+</ol>
+<h1 id="BGP与节点线路优化"><a href="#BGP与节点线路优化" class="headerlink" title="BGP与节点线路优化"></a>BGP与节点线路优化</h1><p>用来连接各个运营商的网域，实现运营商的网络互通及全球互联</p>
+<ul>
+<li>电信骨干网网域: 电信163 AS4134</li>
+<li>电信精品网网域: CN2 AS4809</li>
+<li>联通骨干网网域: 联通169 AS4837</li>
+<li>联通精品网网域: A网 AS9929</li>
+<li>移动骨干网网域: 中国移动 AS9808</li>
+<li>移动国际高速网域：CMI AS58453<br><img src="/source/img/BGP%E4%B8%8E%E8%8A%82%E7%82%B9%E7%BA%BF%E8%B7%AF%E4%BC%98%E5%8C%96.png" alt="BGP与节点线路优化"></li>
+</ul>
+<h2 id="节点速度慢的原因"><a href="#节点速度慢的原因" class="headerlink" title="节点速度慢的原因"></a>节点速度慢的原因</h2><p><img src="/source/img/%E8%8A%82%E7%82%B9%E9%80%9F%E5%BA%A6%E6%85%A2%E7%9A%84%E5%8E%9F%E5%9B%A0.png" alt="节点速度慢的原因"><br>国内运营商和国际互联的BGP线路过于拥挤</p>
+<h2 id="节点加速方案"><a href="#节点加速方案" class="headerlink" title="节点加速方案"></a>节点加速方案</h2><ol>
+<li>更换运营商的精品网络，通过精品网 线路直连代理服务器；</li>
+<li>添加中转机中转流量<br>如：CMI网络接入一个三网回程的代理服务器，移动用户可以在9808网络通过BGP与CMI网络连接访问及回传代理服务器，但是联通或者电信的用户访问代理依然要走拥挤线路，回程才能走CMI线路，所以就需要在移动网络中创建一个中转机来帮助转发数据流量<br><img src="/source/img/%E8%8A%82%E7%82%B9%E5%8A%A0%E9%80%9F%E6%96%B9%E6%A1%88.png" alt="节点加速方案"></li>
+<li>套用CDN服务器<br>CDN：多级的缓存服务器，加快网络中数据传输，<br>如：客户端要访问谷歌正常情况会通过拥挤的瓶颈链路访问谷歌速度非常慢，首先通过DNS域名解析谷歌的域名，会得到一台离客户端最近的CDN服务器地址，发起请求就会把请求交给这台CDN服务器，CDN服务器内检查是否存放需要访问的内容，有则返回数据，没有则向上一级CDN服务器检索缓存访问直到检索到源谷歌服务器。<br><img src="/source/img/CDN%E6%9C%8D%E5%8A%A1%E5%99%A8.png" alt="CDN服务器"><br>套用CDN服务器，使得代理服务器不会直接暴露在公网，尽而不会被GFW探测到，CDN服务器也可以更换<br><img src="/source/img/CDN%E6%9C%8D%E5%8A%A1%E5%99%A82.png" alt="CDN服务器2"><br>CDN优选IP：<br>检测多个CDN服务器的延迟(绕过拥堵线路，去直接连接最近的CDN服务器)</li>
+</ol>
+<h1 id="TCP拥塞控制算法"><a href="#TCP拥塞控制算法" class="headerlink" title="TCP拥塞控制算法"></a>TCP拥塞控制算法</h1><p><img src="/source/img/TCP%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95.png" alt="TCP拥塞控制算法"><br>为了防止多个用户在同一线路发送数据速率太快导致线路崩溃，来控制发送数据的速率</p>
+<h2 id="基于丢包的拥塞控制算法"><a href="#基于丢包的拥塞控制算法" class="headerlink" title="基于丢包的拥塞控制算法"></a>基于丢包的拥塞控制算法</h2><p>如：经典的 Reno 和 CUBIC，先设定一个阈值如8个数据包，从0开始发送2个数据包，无丢包发4个否则回落至0，无丢包发8个否则回落至0，无丢包每次开始增加一个数据包否则回落至0。带宽利用率低。<br><img src="/source/img/%E5%9F%BA%E4%BA%8E%E4%B8%A2%E5%8C%85%E7%9A%84%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95.png" alt="基于丢包的拥塞控制算法"></p>
+<h2 id="基于模型的拥塞控制算法"><a href="#基于模型的拥塞控制算法" class="headerlink" title="基于模型的拥塞控制算法"></a>基于模型的拥塞控制算法</h2><p>如：BBR拥塞控制算法，BBR算法首先将发送速率保持在阈值，并监测延迟如果延迟未增加则尝试增加传输速率，若延迟增加则降低发送速率。带宽利用率高。<br><img src="/source/img/%E5%9F%BA%E4%BA%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95.png" alt="基于模型的拥塞控制算法"></p>
+<h1 id="直连、全局与分流"><a href="#直连、全局与分流" class="headerlink" title="直连、全局与分流"></a>直连、全局与分流</h1><ul>
+<li>直连：顾名思义，不启用代理直接连接</li>
+<li>全局：开启代理后，设备端口的所有网站应用流量均由代理接管</li>
+<li>分流：开启代理后，对设备端口的指定流量进行分流走指定节点或走直连，如谷歌走US节点、抖音走CN节点、tk走UK节点等等，达到精细化分流</li>
+</ul>
+<h1 id="系统代理与TUN模式"><a href="#系统代理与TUN模式" class="headerlink" title="系统代理与TUN模式"></a>系统代理与TUN模式</h1><ul>
+<li>系统代理：本地代理客户端如clash或v2rayN在应用层接管网站的数据流量，浏览器收发的流量转交给代理客户端进行处理，由于是在应用层处理流量所以仅仅只能代理web浏览器的流量，无法代理大多应用app的流量</li>
+<li>TUN模式：通过在网络层创建一张虚拟网卡，在网络层接管设备端口的所有流量，可以处理设备端口所有应用的流量</li>
+</ul>
+<h1 id="软路由"><a href="#软路由" class="headerlink" title="软路由"></a>软路由</h1><p>路由器+软件即为软路由<br>软路由的核心是在路由设备内置入虚拟网卡网络代理内核如:openclash内核，在路由网络层接管局域网内的所有流量，优点是稳定且高优先级</p>
+<h1 id="DDoS攻击"><a href="#DDoS攻击" class="headerlink" title="DDoS攻击"></a>DDoS攻击</h1><p>黑客攻击的常见方式，又名分布式拒绝服务，DDoS的核心是基于Dos，其核心逻辑是通过给服务器发送大量的请求或让服务器持续大量的响应，从而占用消耗服务器资源使得服务器拒绝正常用户的访问请求，DDos则是多个设备对服务器发送大量请求占用消耗服务器资源，类似”群殴”</p>
+<h2 id="ICMP洪水"><a href="#ICMP洪水" class="headerlink" title="ICMP洪水"></a>ICMP洪水</h2><p>向服务器发送大量的IP网络协议包消耗霸占服务器的网络带宽资源，如大量的ping服务器的ip，但会暴露发件人的IP地址从而被禁封，所以需要先伪造IP地址，伪造他人的IP地址发送信息，类似张三装作李四向王五发送邮件</p>
+<h2 id="反射攻击"><a href="#反射攻击" class="headerlink" title="反射攻击"></a>反射攻击</h2><p>通过伪造被攻击方的IP地址，利用该IP作为发件人向互联网上大量的服务器发送请求，这样大量服务器会在同一时间内发送大量的回复响应数据给被攻击IP，类似在不明网站上发布仇人的电话，让大量的推销员给他打电话<br><img src="/source/img/%E5%8F%8D%E5%B0%84%E6%94%BB%E5%87%BB.png" alt="反射攻击"></p>
+<h2 id="放大器攻击"><a href="#放大器攻击" class="headerlink" title="放大器攻击"></a>放大器攻击</h2><p>根据DNS服务器的特性，DNS服务器的传输一般使用UDP协议(只管发 不管对方有没有收到)，当向DNS服务器发送60字节的域名查询请求后，DNS服务器会响应回复3000字节的响应内容数据，使用50倍的BAF放大因子来占用目标带宽资源<br><img src="/source/img/%E6%94%BE%E5%A4%A7%E5%99%A8%E6%94%BB%E5%87%BB.png" alt="放大器攻击"></p>
+<h2 id="TCP洪水"><a href="#TCP洪水" class="headerlink" title="TCP洪水"></a>TCP洪水</h2><h3 id="SYN洪水"><a href="#SYN洪水" class="headerlink" title="SYN洪水"></a>SYN洪水</h3><p>利用TCP三次握手的特性，持续的对对方发送TCP连接请求占用对方带宽资源，但是由于双方建立连接需要双方都使用真实的IP地址发送三次连接请求。如果使用虚假IP地址会导致建立第一次TCP握手后，被伪造的真实IP地址客户端无法响应服务器TCP二次握手的请求，从而向该客户端发送多次TCP重连（一般为10次），实现大量占用服务器带宽资源的目的。</p>
+<h3 id="SYN反射攻击"><a href="#SYN反射攻击" class="headerlink" title="SYN反射攻击"></a>SYN反射攻击</h3><p>基于SYN洪水并结合反射攻击的原理，攻击者伪造目标服务器的IP地址向大量的服务器发送TCP请求，使得大量的服务器在同一时间向目标服务器发送大量的SYN洪水，攻击目标服务器网络带宽</p>
+<h3 id="RST洪水-针对用户"><a href="#RST洪水-针对用户" class="headerlink" title="RST洪水(针对用户)"></a>RST洪水(针对用户)</h3><p>利用TCP四次挥手的特性，只有在客户端与服务器在建立四次挥手连接后服务器才会断开连接，但是以防万一，客户端向服务器发送一次RST数据即可立即断开连接，所以攻击者通常会伪造大量IP地址向服务器发送RST请求，对用户IP进行盲打，以切断用户与服务器之间的连接，如在游戏中获取到目标的IP地址后，即可伪造该IP地址不断向服务器发送的RST请求，切断连接干扰目标的游戏体验</p>
+<h2 id="HTTP洪水"><a href="#HTTP洪水" class="headerlink" title="HTTP洪水"></a>HTTP洪水</h2><p>顾名思义，在目标网站上发送大量的网页请求，如发送大量的搜索查询，消耗服务器的IO资源来对服务器进行攻击，但是由于HTTP属于应用层协议，攻击者通常需要使用大量的代理IP节点发起HTTP攻击</p>
+<h1 id="DDoS的防护与治理"><a href="#DDoS的防护与治理" class="headerlink" title="DDoS的防护与治理"></a>DDoS的防护与治理</h1><h2 id="网络设备IP过滤"><a href="#网络设备IP过滤" class="headerlink" title="网络设备IP过滤"></a>网络设备IP过滤</h2><p>由于DDoS大多是在网络层之上的请求攻击，所以构建安全审查机制严格的路由网络是关键，如:路由器对局域网内发送数据设备的IP进行审查，若不在局域网网段内则干掉该数据。但是难以实现需要服务商及监管部门推进</p>
+<h2 id="CDN稀释"><a href="#CDN稀释" class="headerlink" title="CDN稀释"></a>CDN稀释</h2><p>在根服务器前架设多台CDN服务器存储目标网站的数据，让CDN服务器内的缓存数据来应对目标对网站的请求。但是稀释作用有限。</p>
+<h2 id="流量清洗"><a href="#流量清洗" class="headerlink" title="流量清洗"></a>流量清洗</h2><p>在根服务器前假设流量清洗设备，如目标对根服务器发起SYN洪水，流量清洗设备先对目标响应，如多次回复后未收到响应则断开连接。流量清洗设备厂商会建立IP信用库，对不好的IP进行过滤<br><img src="/source/img/%E6%B5%81%E9%87%8F%E6%B8%85%E6%B4%97.png" alt="流量清洗"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://missonix.github.io">Missonix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://missonix.github.io/2023/09/29/VPS%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E5%8F%8A%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%B8%8E%E6%94%BB%E5%87%BB/">https://missonix.github.io/2023/09/29/VPS%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E5%8F%8A%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%B8%8E%E6%94%BB%E5%87%BB/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://missonix.github.io" target="_blank">Missonix</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/VPS/">VPS</a><a class="post-meta__tags" href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/">网络安全</a><a class="post-meta__tags" href="/tags/%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8/">代理服务器</a><a class="post-meta__tags" href="/tags/%E7%BD%91%E7%BB%9C/">网络</a></div><div class="post-share"><div class="social-share" data-image="/img/Missonix.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2024/03/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/" title="机器学习基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">机器学习基础</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/Missonix.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Missonix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">15</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Missonix" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:ackerman0919@163.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86"><span class="toc-number">1.</span> <span class="toc-text">基础网络知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP-IP-%E5%9B%9B%E5%B1%82%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.</span> <span class="toc-text">TCP&#x2F;IP 四层模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B-%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.1.1.</span> <span class="toc-text">TCP三次握手(建立连接)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B-%E6%96%AD%E5%BC%80%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.1.2.</span> <span class="toc-text">TCP四次挥手(断开连接)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP%E5%9B%9B%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%BC%A0%E8%BE%93%E6%9C%BA%E5%88%B6"><span class="toc-number">1.1.3.</span> <span class="toc-text">TCP四层模型传输机制</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DNS%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">2.</span> <span class="toc-text">DNS服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#DNS%E6%B3%84%E9%9C%B2"><span class="toc-number">2.1.</span> <span class="toc-text">DNS泄露</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TLS%E5%AE%89%E5%85%A8%E5%8D%8F%E8%AE%AE"><span class="toc-number">3.</span> <span class="toc-text">TLS安全协议</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B"><span class="toc-number">3.1.</span> <span class="toc-text">TLS握手过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS1-3"><span class="toc-number">3.2.</span> <span class="toc-text">TLS1.3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DFW%E9%98%B2%E7%81%AB%E5%A2%99"><span class="toc-number">3.3.</span> <span class="toc-text">DFW防火墙</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DNS%E6%B1%A1%E6%9F%93"><span class="toc-number">3.4.</span> <span class="toc-text">DNS污染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP%E9%87%8D%E7%BD%AE%E6%94%BB%E5%87%BB"><span class="toc-number">3.5.</span> <span class="toc-text">TCP重置攻击</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.</span> <span class="toc-text">网络代理传输协议</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BGP%E4%B8%8E%E8%8A%82%E7%82%B9%E7%BA%BF%E8%B7%AF%E4%BC%98%E5%8C%96"><span class="toc-number">5.</span> <span class="toc-text">BGP与节点线路优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8A%82%E7%82%B9%E9%80%9F%E5%BA%A6%E6%85%A2%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">5.1.</span> <span class="toc-text">节点速度慢的原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8A%82%E7%82%B9%E5%8A%A0%E9%80%9F%E6%96%B9%E6%A1%88"><span class="toc-number">5.2.</span> <span class="toc-text">节点加速方案</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TCP%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95"><span class="toc-number">6.</span> <span class="toc-text">TCP拥塞控制算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E4%B8%A2%E5%8C%85%E7%9A%84%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95"><span class="toc-number">6.1.</span> <span class="toc-text">基于丢包的拥塞控制算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95"><span class="toc-number">6.2.</span> <span class="toc-text">基于模型的拥塞控制算法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%9B%B4%E8%BF%9E%E3%80%81%E5%85%A8%E5%B1%80%E4%B8%8E%E5%88%86%E6%B5%81"><span class="toc-number">7.</span> <span class="toc-text">直连、全局与分流</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E4%BB%A3%E7%90%86%E4%B8%8ETUN%E6%A8%A1%E5%BC%8F"><span class="toc-number">8.</span> <span class="toc-text">系统代理与TUN模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BD%AF%E8%B7%AF%E7%94%B1"><span class="toc-number">9.</span> <span class="toc-text">软路由</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DDoS%E6%94%BB%E5%87%BB"><span class="toc-number">10.</span> <span class="toc-text">DDoS攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ICMP%E6%B4%AA%E6%B0%B4"><span class="toc-number">10.1.</span> <span class="toc-text">ICMP洪水</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E6%94%BB%E5%87%BB"><span class="toc-number">10.2.</span> <span class="toc-text">反射攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BE%E5%A4%A7%E5%99%A8%E6%94%BB%E5%87%BB"><span class="toc-number">10.3.</span> <span class="toc-text">放大器攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP%E6%B4%AA%E6%B0%B4"><span class="toc-number">10.4.</span> <span class="toc-text">TCP洪水</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SYN%E6%B4%AA%E6%B0%B4"><span class="toc-number">10.4.1.</span> <span class="toc-text">SYN洪水</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SYN%E5%8F%8D%E5%B0%84%E6%94%BB%E5%87%BB"><span class="toc-number">10.4.2.</span> <span class="toc-text">SYN反射攻击</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RST%E6%B4%AA%E6%B0%B4-%E9%92%88%E5%AF%B9%E7%94%A8%E6%88%B7"><span class="toc-number">10.4.3.</span> <span class="toc-text">RST洪水(针对用户)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP%E6%B4%AA%E6%B0%B4"><span class="toc-number">10.5.</span> <span class="toc-text">HTTP洪水</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DDoS%E7%9A%84%E9%98%B2%E6%8A%A4%E4%B8%8E%E6%B2%BB%E7%90%86"><span class="toc-number">11.</span> <span class="toc-text">DDoS的防护与治理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87IP%E8%BF%87%E6%BB%A4"><span class="toc-number">11.1.</span> <span class="toc-text">网络设备IP过滤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CDN%E7%A8%80%E9%87%8A"><span class="toc-number">11.2.</span> <span class="toc-text">CDN稀释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E9%87%8F%E6%B8%85%E6%B4%97"><span class="toc-number">11.3.</span> <span class="toc-text">流量清洗</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/01/26/LangChain%E5%9F%BA%E7%A1%80%E4%B8%8ERAG-Agent%E5%BC%80%E5%8F%91/" title="LangChain基础与RAG Agent开发">LangChain基础与RAG Agent开发</a><time datetime="2025-01-26T15:01:13.000Z" title="发表于 2025-01-26 23:01:13">2025-01-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/29/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%90%86%E8%A7%A3/" title="卷积神经网络理解">卷积神经网络理解</a><time datetime="2024-03-29T00:26:13.000Z" title="发表于 2024-03-29 08:26:13">2024-03-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/" title="机器学习基础">机器学习基础</a><time datetime="2024-03-28T11:45:13.000Z" title="发表于 2024-03-28 19:45:13">2024-03-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/29/VPS%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E5%8F%8A%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%B8%8E%E6%94%BB%E5%87%BB/" title="VPS网络代理服务器搭建及网络安全与攻击">VPS网络代理服务器搭建及网络安全与攻击</a><time datetime="2023-09-29T02:53:05.000Z" title="发表于 2023-09-29 10:53:05">2023-09-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Missonix</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.3</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div></div></body></html>
