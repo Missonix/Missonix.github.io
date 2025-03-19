@@ -1,0 +1,45 @@
+# 导航菜单配置
+menu:
+  首页: / || fas fa-home
+  归档: /archives/ || fas fa-archive
+  分类: /categories/ || fas fa-folder-open
+  标签: /tags/ || fas fa-tags
+  友链: /link/ || fas fa-link
+  关于: /about/ || fas fa-user
+
+# 侧边栏配置
+social:
+  fab fa-github: https://github.com/Missonix || Github
+  fas fa-envelope: mailto:ackerman0919@163.com || Email
+
+# 友链页面配置 (需配合source/_data/link.yml)
+links:
+  layout: links
+  title: 友情链接
+  subtitle: 交换友链可在下方评论
+
+# 主题颜色
+theme_color:
+  enable: true
+  main: "#8fd9c6"
+  gradient:
+    start: "#FF7F7F"
+    end: "#87CEFA"
+
+# 字体设置
+font:
+  font-size: 16px
+  font-family: -apple-system, "Segoe UI", "Microsoft YaHei"
+
+avatar:
+  img: /img/Missonix.jpg
+  effect: false
+
+busuanzi:
+  site_uv: false
+  site_pv: false
+  page_pv: false
+
+# 卡片阴影效果
+card_shadow: true
+hover_shadow: true

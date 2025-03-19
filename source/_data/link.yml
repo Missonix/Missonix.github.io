@@ -1,0 +1,13 @@
+- class_name: 本站
+  class_desc: 少量产品展示
+  link_list:
+    - name: Missonix AI
+      link: https://www.missonix.com/
+      avatar: /img/favicon.jpg
+      descr: AI 智能助手
+
+    - name: 智能工单系统(原型展示)
+      link: https://missonix.github.io/prototype/workorder/登录.html
+      avatar: /img/联通.png
+      descr: 基于大模型的智能工单管理系统
+      target: _blank
