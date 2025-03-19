@@ -1,4 +1,4 @@
-$axure.internal(function($ax) {
+﻿$axure.internal(function($ax) {
     var widgetDragInfo = new Object();
     var _drag = {};
     $ax.drag = _drag;

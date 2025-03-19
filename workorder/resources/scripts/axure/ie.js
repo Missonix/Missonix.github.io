@@ -1,4 +1,4 @@
-
+﻿
 //// ******* Internet Explorer MANAGER ******** //
 ////this is to handle all the stupid IE Stuff
 //$axure.internal(function($ax) {

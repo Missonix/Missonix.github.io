@@ -1,4 +1,4 @@
-
+﻿
 // ******* Repeater MANAGER ******** //
 $axure.internal(function($ax) {
     var _repeaterManager = {};

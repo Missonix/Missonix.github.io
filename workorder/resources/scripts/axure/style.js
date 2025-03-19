@@ -1,4 +1,4 @@
-$axure.internal(function($ax) {
+﻿$axure.internal(function($ax) {
     var _style = {};
     $ax.style = _style;
 

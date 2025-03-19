@@ -1,4 +1,4 @@
-// ******* Region MANAGER ******** //
+﻿// ******* Region MANAGER ******** //
 $axure.internal(function($ax) {
     var _geometry = $ax.geometry = {};
     var regionMap = {};

@@ -1,4 +1,4 @@
-// ******* Annotation MANAGER ******** //
+﻿// ******* Annotation MANAGER ******** //
 $axure.internal(function($ax) {
     var NOTE_SIZE = 10;
 

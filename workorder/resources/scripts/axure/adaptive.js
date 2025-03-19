@@ -1,4 +1,4 @@
-$axure.internal(function($ax) {
+﻿$axure.internal(function($ax) {
     $ax.adaptive = {};
 
     $axure.utils.makeBindable($ax.adaptive, ["viewChanged"]);

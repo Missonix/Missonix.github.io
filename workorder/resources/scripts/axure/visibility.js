@@ -1,4 +1,4 @@
-$axure.internal(function($ax) {
+﻿$axure.internal(function($ax) {
     var document = window.document;
     var _visibility = {};
     $ax.visibility = _visibility;

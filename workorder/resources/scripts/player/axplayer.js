@@ -1,4 +1,4 @@
-var PAGE_ID_NAME = 'id';
+﻿var PAGE_ID_NAME = 'id';
 var PAGE_URL_NAME = 'p';
 var SITEMAP_COLLAPSE_VAR_NAME = 'c';
 var PLUGIN_VAR_NAME = 'g';

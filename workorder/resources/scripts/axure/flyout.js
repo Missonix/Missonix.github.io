@@ -1,4 +1,4 @@
-// ******* Flyout MANAGER ******** //
+﻿// ******* Flyout MANAGER ******** //
 $axure.internal(function($ax) {
     var _flyoutManager = $ax.flyoutManager = {};
 

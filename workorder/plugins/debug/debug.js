@@ -1,4 +1,4 @@
-// use this to isolate the scope
+﻿// use this to isolate the scope
 (function () {
 
     if(!$axure.document.configuration.showConsole) { return; }

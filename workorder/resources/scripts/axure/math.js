@@ -1,4 +1,4 @@
-$axure.internal(function($ax) {
+﻿$axure.internal(function($ax) {
     $ax.public.fn.matrixMultiply = function(matrix, vector) {
         if(!matrix.tx) matrix.tx = 0;
         if(!matrix.ty) matrix.ty = 0;

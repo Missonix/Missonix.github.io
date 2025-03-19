@@ -1,4 +1,4 @@
-// ******* Object Model ******** //
+﻿// ******* Object Model ******** //
 $axure.internal(function($ax) {
     var _implementations = {};
 

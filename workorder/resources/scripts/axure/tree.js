@@ -1,4 +1,4 @@
-// This is actually for BOTH trees and menus
+﻿// This is actually for BOTH trees and menus
 $axure.internal(function($ax) {
     var _tree = $ax.tree = {};
     var _menu = $ax.menu = {};

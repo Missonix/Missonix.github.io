@@ -1,4 +1,4 @@
-// ******* Features MANAGER ******** //
+﻿// ******* Features MANAGER ******** //
 
 $axure.internal(function($ax) {
     var _features = $ax.features = {};

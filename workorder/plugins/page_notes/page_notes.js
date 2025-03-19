@@ -1,4 +1,4 @@
-// use this to isolate the scope
+﻿// use this to isolate the scope
 (function () {
     // No notes shown specified by generation config
     if (!$axure.document.configuration.showPageNotes && !$axure.document.configuration.showAnnotationsSidebar && !$axure.document.configuration.showAnnotations) { return; }

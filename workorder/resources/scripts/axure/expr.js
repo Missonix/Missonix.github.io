@@ -1,4 +1,4 @@
-// ******* Expr MANAGER ******** //
+﻿// ******* Expr MANAGER ******** //
 $axure.internal(function($ax) {
     var _expr = $ax.expr = {};
     var _binOpHandlers = {

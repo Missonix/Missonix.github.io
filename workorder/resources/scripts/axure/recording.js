@@ -1,4 +1,4 @@
-// ******* Recording MANAGER ******** //
+﻿// ******* Recording MANAGER ******** //
 
 $axure.internal(function($ax) {
     var _recording = $ax.recording = {};

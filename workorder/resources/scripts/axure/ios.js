@@ -1,4 +1,4 @@
-$axure.internal(function ($ax) {
+﻿$axure.internal(function ($ax) {
     if ((IOS && SAFARI) || SHARE_APP) {
         var outerHtml = document.documentElement;
         outerHtml.id = 'ios-safari';

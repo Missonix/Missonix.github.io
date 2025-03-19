@@ -1,4 +1,4 @@
-var currentNodeUrl = '';
+﻿var currentNodeUrl = '';
 var allNodeUrls = [];
 
 var openNextPage = $axure.player.openNextPage = function () {

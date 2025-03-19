@@ -1,4 +1,4 @@
-// ******* Deep Copy ******** //
+﻿// ******* Deep Copy ******** //
 $axure.internal(function($ax) {
     // TODO: [ben] Ah, infinite loops cause major issues here. Tried saving objects we've already hit, but that didn't seem to work (at least at my first shot).
     // TODO:  [ben] To continue from above, added a filter to filter out problem keys. Will need a better way of sorting this out eventually.

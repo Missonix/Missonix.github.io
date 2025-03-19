@@ -1,4 +1,4 @@
-// ******* GLOBAL VARIABLE PROVIDER ******** //
+﻿// ******* GLOBAL VARIABLE PROVIDER ******** //
 $axure.internal(function($ax) {
     var _globalVariableValues = {};
 

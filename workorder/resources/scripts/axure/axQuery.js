@@ -1,4 +1,4 @@
-$axure = function(query) {
+﻿$axure = function(query) {
     return $axure.query(query);
 };
  
